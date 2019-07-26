@@ -428,6 +428,10 @@ class InAppBrowser {
       throw Exception(['Error: ${ (message.isEmpty) ? '' : message + ' '}The browser is not opened.']);
     }
   }
+
+  void onShowFileChooser() {
+
+  }
 }
 
 ///ChromeSafariBrowser class.
@@ -550,6 +554,7 @@ typedef onWebViewConsoleMessageCallback = void Function(InAppWebViewController c
 typedef shouldOverrideUrlLoadingCallback = void Function(InAppWebViewController controller, String url);
 typedef onWebViewLoadResourceCallback = void Function(InAppWebViewController controller, WebResourceResponse response, WebResourceRequest request);
 typedef onWebViewScrollChangedCallback = void Function(InAppWebViewController controller, int x, int y);
+typedef onShowFileChooser = void Function(InAppWebViewController controller);
 
 ///Initial [data] as a content for an [InAppWebView] instance, using [baseUrl] as the base URL for it.
 ///The [mimeType] property specifies the format of the data.
@@ -666,6 +671,8 @@ class InAppWebView extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
+  final void Function(InAppWebViewController controller) onShowFileChooser;
+
   const InAppWebView({
     Key key,
     this.initialUrl = "about:blank",
@@ -683,6 +690,7 @@ class InAppWebView extends StatefulWidget {
     this.onLoadResource,
     this.onScrollChanged,
     this.gestureRecognizers,
+    this.onShowFileChooser
   }) : super(key: key);
 
   @override
@@ -887,6 +895,12 @@ class InAppWebViewController {
             return null;
           }
         }
+        break;
+      case "onShowFileChooser":
+        if (_widget != null && _widget.onShowFileChooser != null)
+          _widget.onShowFileChooser(this);
+        else if (_inAppBrowser != null)
+          _inAppBrowser.onShowFileChooser();
         break;
       default:
         throw UnimplementedError("Unimplemented ${call.method} method");
@@ -1296,6 +1310,12 @@ class InAppWebViewController {
   ///Dispose/Destroy the WebView.
   Future<void> _dispose() async {
     await _channel.invokeMethod('dispose');
+  }
+
+  Future<void> fileChosen(String filepath) async {
+    Map<String, dynamic> args = <String, dynamic>{};
+    args["uri"] = ["file://$filepath"];
+    await _channel.invokeMethod("filesChosen", args);
   }
 
 }

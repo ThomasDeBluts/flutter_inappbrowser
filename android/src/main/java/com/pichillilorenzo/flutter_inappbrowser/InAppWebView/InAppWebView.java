@@ -516,4 +516,14 @@ public class InAppWebView extends WebView {
   private MethodChannel getChannel() {
     return (inAppBrowserActivity != null) ? InAppBrowserFlutterPlugin.channel : flutterWebView.channel;
   }
+
+  public void fileChosen(String uri) {
+    if (inAppWebChromeClient == null) return;
+    inAppWebChromeClient.fileChosen(uri);
+  }
+
+  public void filesChosen(ArrayList<String> uri) {
+    if (inAppWebChromeClient == null) return;
+    inAppWebChromeClient.filesChosen(uri);
+  }
 }

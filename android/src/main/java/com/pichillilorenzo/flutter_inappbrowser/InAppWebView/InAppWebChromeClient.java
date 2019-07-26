@@ -17,6 +17,7 @@ import com.pichillilorenzo.flutter_inappbrowser.FlutterWebView;
 import com.pichillilorenzo.flutter_inappbrowser.InAppBrowserActivity;
 import com.pichillilorenzo.flutter_inappbrowser.InAppBrowserFlutterPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -174,19 +175,25 @@ public class InAppWebChromeClient extends WebChromeClient {
       mUploadMessageArray.onReceiveValue(null);
     }
     mUploadMessageArray = filePathCallback;
-
-    Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
-    contentSelectionIntent.setType("*/*");
-    Intent[] intentArray;
-    intentArray = new Intent[0];
-
-    Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
-    chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-    chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
-    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
-    ((inAppBrowserActivity != null) ? inAppBrowserActivity : flutterWebView.activity).startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+    getChannel().invokeMethod("onShowFileChooser", null);
     return true;
+  }
+
+  public void fileChosen(String uri) {
+    if (null == mUploadMessage) return;
+    Uri result = Uri.parse(uri);
+    mUploadMessage.onReceiveValue(result);
+    mUploadMessage = null;
+  }
+
+  public void filesChosen(ArrayList<String> uriList) {
+    if (null == mUploadMessageArray) return;
+    Uri[] uris = new Uri[uriList.size()];
+    for (int i = 0; i < uriList.size(); i++) {
+      uris[i] = Uri.parse(uriList.get(i));
+    }
+    mUploadMessageArray.onReceiveValue(uris);
+    mUploadMessageArray = null;
   }
 
   private MethodChannel getChannel() {

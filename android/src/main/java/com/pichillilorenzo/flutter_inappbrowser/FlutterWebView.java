@@ -1,7 +1,6 @@
 package com.pichillilorenzo.flutter_inappbrowser;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -12,15 +11,17 @@ import com.pichillilorenzo.flutter_inappbrowser.InAppWebView.InAppWebView;
 import com.pichillilorenzo.flutter_inappbrowser.InAppWebView.InAppWebViewOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import static io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.platform.PlatformView;
+
+import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import static io.flutter.plugin.common.MethodChannel.Result;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler  {
 
@@ -93,13 +94,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "loadUrl":
         if (webView != null)
-          webView.loadUrl(call.argument("url").toString(), (Map<String, String>) call.argument("headers"), result);
+          webView.loadUrl(call.argument("url").toString(), call.argument("headers"), result);
         else
           result.success(false);
         break;
       case "postUrl":
         if (webView != null)
-          webView.postUrl(call.argument("url").toString(), (byte[]) call.argument("postData"), result);
+          webView.postUrl(call.argument("url").toString(), call.argument("postData"), result);
         else
           result.success(false);
         break;
@@ -118,9 +119,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "loadFile":
         if (webView != null)
-          webView.loadFile(call.argument("url").toString(), (Map<String, String>) call.argument("headers"), result);
+          webView.loadFile(call.argument("url").toString(), call.argument("headers"), result);
         else
           result.success(false);
+        break;
+      case "fileChosen":
+        if (webView != null) {
+          String uri = call.argument("uri").toString();
+          webView.fileChosen(uri);
+        }
+        result.success("");
+        break;
+      case "filesChosen":
+        if (webView != null) {
+          ArrayList<String> uri = call.argument("uri");
+          webView.filesChosen(uri);
+        }
+        result.success("");
         break;
       case "injectScriptCode":
         if (webView != null) {
@@ -175,11 +190,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "goBackOrForward":
         if (webView != null)
-          webView.goBackOrForward((Integer) call.argument("steps"));
+          webView.goBackOrForward(call.argument("steps"));
         result.success(true);
         break;
       case "canGoBackOrForward":
-        result.success((webView != null) && webView.canGoBackOrForward((Integer) call.argument("steps")));
+        result.success((webView != null) && webView.canGoBackOrForward(call.argument("steps")));
         break;
       case "stopLoading":
         if (webView != null)
@@ -195,7 +210,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
       case "setOptions":
         if (webView != null) {
           InAppWebViewOptions inAppWebViewOptions = new InAppWebViewOptions();
-          HashMap<String, Object> inAppWebViewOptionsMap = (HashMap<String, Object>) call.argument("options");
+          HashMap<String, Object> inAppWebViewOptionsMap = call.argument("options");
           inAppWebViewOptions.parse(inAppWebViewOptionsMap);
           webView.setOptions(inAppWebViewOptions, inAppWebViewOptionsMap);
         }
