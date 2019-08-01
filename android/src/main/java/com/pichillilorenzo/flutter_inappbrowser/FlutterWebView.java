@@ -1,11 +1,23 @@
 package com.pichillilorenzo.flutter_inappbrowser;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.pichillilorenzo.flutter_inappbrowser.InAppWebView.InAppWebView;
 import com.pichillilorenzo.flutter_inappbrowser.InAppWebView.InAppWebViewOptions;
@@ -17,22 +29,30 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.platform.PlatformView;
 
+import static android.content.Context.DOWNLOAD_SERVICE;
 import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import static io.flutter.plugin.common.MethodChannel.Result;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler  {
 
   static final String LOG_TAG = "FlutterWebView";
+  static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 34453;
 
   public final Activity activity;
   public InAppWebView webView;
   public MethodChannel channel;
   public final Registrar registrar;
 
-  public FlutterWebView(Registrar registrar, int id, HashMap<String, Object> params) {
+  private String dlURL = "";
+  private String dlUserAgent = "";
+  private String dlContentDisposition ="";
+  private String dlMimeType = "";
+
+  public FlutterWebView(final Registrar registrar, int id, HashMap<String, Object> params) {
 
     this.registrar = registrar;
     this.activity = registrar.activity();
@@ -71,6 +91,64 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
     }
     else
       webView.loadUrl(initialUrl, initialHeaders);
+
+    registrar.addRequestPermissionsResultListener(new PluginRegistry.RequestPermissionsResultListener() {
+      @Override
+      public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+        case MY_PERMISSIONS_REQUEST_WRITE_STORAGE: {
+          if (grantResults.length > 0
+                  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startDownload(dlURL, dlUserAgent, dlContentDisposition, dlMimeType);
+          }
+        }
+      }
+        return true;
+      }
+    });
+
+    webView.setDownloadListener(new DownloadListener() {
+      public void onDownloadStart(String url, String userAgent,
+                                  String contentDisposition, String mimeType,
+                                  long contentLength) {
+        dlURL = url; dlUserAgent = userAgent; dlContentDisposition = contentDisposition; dlMimeType = mimeType;
+        if (ContextCompat.checkSelfPermission(getView().getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+          if (ActivityCompat.shouldShowRequestPermissionRationale(registrar.activity(),
+                  Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+          } else {
+            ActivityCompat.requestPermissions(registrar.activity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+          }
+        } else {
+          startDownload(url, userAgent, contentDisposition, mimeType);
+        }
+      }
+    });
+  }
+
+  public void startDownload(String url, String userAgent,
+                            String contentDisposition, String mimeType) {
+    DownloadManager.Request request = new DownloadManager.Request(
+            Uri.parse(url));
+    request.setMimeType(mimeType);
+
+    String cookies = CookieManager.getInstance().getCookie(url);
+    request.addRequestHeader("cookie", cookies);
+    request.addRequestHeader("User-Agent", userAgent);
+    request.setDescription("Downloading file...");
+    request.setTitle(URLUtil.guessFileName(url, contentDisposition,
+            mimeType));
+    request.allowScanningByMediaScanner();
+    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+    request.setDestinationInExternalPublicDir(
+            Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(
+                    url, contentDisposition, mimeType));
+    DownloadManager dm = (DownloadManager) getView().getContext().getSystemService(DOWNLOAD_SERVICE);
+    dm.enqueue(request);
+    Toast.makeText(getView().getContext(), "Downloading File",
+            Toast.LENGTH_LONG).show();
   }
 
   @Override
@@ -94,13 +172,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "loadUrl":
         if (webView != null)
-          webView.loadUrl(call.argument("url").toString(), call.argument("headers"), result);
+          webView.loadUrl(call.argument("url").toString(), (Map<String,String>)call.argument("headers"), result);
         else
           result.success(false);
         break;
       case "postUrl":
         if (webView != null)
-          webView.postUrl(call.argument("url").toString(), call.argument("postData"), result);
+          webView.postUrl(call.argument("url").toString(), (byte[])call.argument("postData"), result);
         else
           result.success(false);
         break;
@@ -119,7 +197,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "loadFile":
         if (webView != null)
-          webView.loadFile(call.argument("url").toString(), call.argument("headers"), result);
+          webView.loadFile(call.argument("url").toString(), (Map<String,String>)call.argument("headers"), result);
         else
           result.success(false);
         break;
@@ -190,11 +268,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
         break;
       case "goBackOrForward":
         if (webView != null)
-          webView.goBackOrForward(call.argument("steps"));
+          webView.goBackOrForward((int)call.argument("steps"));
         result.success(true);
         break;
       case "canGoBackOrForward":
-        result.success((webView != null) && webView.canGoBackOrForward(call.argument("steps")));
+        result.success((webView != null) && webView.canGoBackOrForward((int)call.argument("steps")));
         break;
       case "stopLoading":
         if (webView != null)
