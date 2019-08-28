@@ -15,6 +15,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b41f7a2-a71e-4923-91fb-249d7815b3e7" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/src/main/java/com/pichillilorenzo/flutter_inappbrowser/FlutterWebView.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/com/pichillilorenzo/flutter_inappbrowser/FlutterWebView.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.dart_tool/" />
@@ -43,7 +44,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flutter_inappbrowser.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7788">
+            <state relative-caret-position="18133">
               <caret line="1316" column="38" selection-start-line="1316" selection-start-column="38" selection-end-line="1316" selection-end-column="38" />
               <folding>
                 <element signature="e#814#831#0" expanded="true" />
@@ -158,10 +159,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-3440" />
-    <option name="y" value="-540" />
-    <option name="width" value="3440" />
-    <option name="height" value="1440" />
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -169,6 +168,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <expand>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="flutter_inappbrowser" type="cbb8eebc:String" user="flutter_inappbrowser" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -176,22 +186,6 @@
             <path>
               <item name="flutter_inappbrowser" type="b2602c69:ProjectViewProjectNode" />
               <item name="flutter_inappbrowser" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="flutter_inappbrowser" type="b2602c69:ProjectViewProjectNode" />
-              <item name="flutter_inappbrowser" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <expand>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="flutter_inappbrowser" type="cbb8eebc:String" user="flutter_inappbrowser" />
             </path>
           </expand>
           <select />
@@ -373,11 +367,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3440" y="-540" width="3440" height="1440" extended-state="0" />
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6198113" visible="true" weight="0.06503826" />
-      <window_info id="Structure" order="1" sideWeight="0.38018867" side_tool="true" visible="true" weight="0.06503826" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.6180723" visible="true" weight="0.15808298" />
+      <window_info id="Structure" order="1" sideWeight="0.3819277" side_tool="true" visible="true" weight="0.15808298" />
       <window_info id="Designer" order="2" />
       <window_info id="Build Variants" order="3" side_tool="true" />
       <window_info id="Captures" order="4" side_tool="true" weight="0.32936507" />
@@ -397,7 +391,7 @@
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49533224" weight="0.2919786" />
       <window_info anchor="bottom" id="Logcat" order="11" weight="0.32953367" />
-      <window_info anchor="bottom" id="Messages" order="12" visible="true" weight="0.22627737" />
+      <window_info anchor="bottom" id="Messages" order="12" visible="true" weight="0.37349397" />
       <window_info anchor="bottom" id="Dependency Viewer" order="13" weight="0.32800853" />
       <window_info anchor="bottom" id="Dart Analysis" order="14" weight="0.3253886" />
       <window_info anchor="bottom" id="Flutter Performance" order="15" side_tool="true" />
@@ -671,7 +665,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flutter_inappbrowser.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7788">
+        <state relative-caret-position="18133">
           <caret line="1316" column="38" selection-start-line="1316" selection-start-column="38" selection-end-line="1316" selection-end-column="38" />
           <folding>
             <element signature="e#814#831#0" expanded="true" />
